@@ -2,9 +2,13 @@ import mongoose, { model , Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
 export interface IUser{
-    username:string,
-    email:string,
-    password:string
+    username:string;
+    email:string;
+    password:string;
+
+    isVerified: boolean;
+    verificationToken?: string;
+    tokenExpiry?: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -25,6 +29,18 @@ const userSchema = new mongoose.Schema<IUser>(
       required: true,
       minlength: 6,
     },
+
+    isVerified:{
+      type:Boolean,
+      default:false
+    },
+
+    verificationToken:{
+      type:String,
+    },
+    tokenExpiry:{
+      type:Date
+    }
   },
   { timestamps: true },
 );
