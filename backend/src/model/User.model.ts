@@ -9,6 +9,8 @@ export interface IUser{
     isVerified: boolean;
     verificationToken?: string;
     tokenExpiry?: Date;
+    resetPasswordToken?: string;
+    resetTokenExpires: Date ;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -40,7 +42,13 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     tokenExpiry:{
       type:Date
-    }
+    },
+    resetPasswordToken: {
+      type:String 
+    },
+
+    resetTokenExpires: Date,
+
   },
   { timestamps: true },
 );

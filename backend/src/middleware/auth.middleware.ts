@@ -7,11 +7,13 @@ interface JwtPayload {
 }
 
 
-const loggedIn = async function(req:Request , res:Response , next:NextFunction){
+export const loggedIn = async function(req:Request , res:Response , next:NextFunction){
     console.log(req.cookies)
 
   try {
         const token = req.cookies?.token;
+        //           cookie ko retieve krta h token se 
+        //jo token name se cookie store h usko fir ek token var m store kro
 
         if (!token) {
           return res.status(400).json({
@@ -22,7 +24,7 @@ const loggedIn = async function(req:Request , res:Response , next:NextFunction){
         
         const JWT_SECRET=  process.env.JWT_SECRET
         if (!JWT_SECRET){
-            throw new Error("Please provise JWT_SECRET in env");
+            throw new Error("Please provide JWT_SECRET in env");
         }
 
          const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload

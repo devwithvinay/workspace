@@ -24,12 +24,6 @@ app.use(
   }),
 );
 
-app.get("/",(req:Request , res:Response)=>{
-    res.send(200).json({
-        message:" Api is set now"
-    })
-
-})
 
 // db connect 
 connectDB();
