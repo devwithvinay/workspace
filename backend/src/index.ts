@@ -4,7 +4,7 @@ import cors from "cors"
 import type { Request, Response } from "express";
 import connectDB from "./utils/db.js";
 import userRoutes from "./routes/auth.route.js"
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app = express();
@@ -13,6 +13,7 @@ const port = process.env.PORT || 8080
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(cookieParser())
 
 app.use(
   cors({
