@@ -24,7 +24,8 @@ const focusSessionSchema = new mongoose.Schema<IFocusSession>(
 
     duration:{
         type:Number,
-        default: 0 
+        default: 0 ,
+        required:true
 
     },
     status:{

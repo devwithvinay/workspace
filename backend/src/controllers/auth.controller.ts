@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import User from "../model/User.model.js";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import bcrypt, { compare } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const registerUser = async function (req: Request, res: Response) {
