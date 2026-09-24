@@ -1,10 +1,14 @@
 import express from "express"
 import dotenv from "dotenv"
 import cors from "cors"
-import type { Request, Response } from "express";
 import connectDB from "./utils/db.js";
-import userRoutes from "./routes/auth.route.js"
 import cookieParser from "cookie-parser";
+// routes 
+import userRoutes from "./routes/auth.route.js"
+import sessionRoutes from "./routes/session.route.js"
+
+
+
 dotenv.config();
 
 const app = express();
@@ -30,6 +34,7 @@ connectDB();
 
 //routes
 app.use("/api/v1/users",userRoutes)
+app.use("/api/v1/session",sessionRoutes)
 
 app.listen(port , ()=>{
     console.log(`Server is running on port: ${port}`)
