@@ -1,14 +1,10 @@
-import type {Request , Response} from "express"
-import User from "../model/User.model.js"
-import FocusSession from "../model/FocusSession.js"
+import type { Request, Response } from "express";
+import FocusSession from "../model/FocusSession.js";
 
-
-const startSession = async function(req:Request , res:Response){
-
-    // user Id auth middleware se aygi
-    const userId = req.user?.id
-try {
-    
+export const startSession = async function (req: Request, res: Response) {
+  // user Id auth middleware se aygi
+  const userId = req.user?.id;
+  try {
     if (!userId) {
       return res.status(400).json({
         message: "UnAuthorized",
@@ -27,7 +23,7 @@ try {
         message: "User already in session",
       });
     }
-     // create a new focus session
+    // create a new focus session
     const session = await FocusSession.create({
       user: userId,
       startTime: new Date(),
@@ -39,24 +35,76 @@ try {
       message: "Focus session started",
       success: true,
     });
-    
-} catch (error) {
+  } catch (error) {
     return res.status(500).json({
-        message:"Failed to start session",
-        success:false,
-        error
-    })   
-}
-}
+      message: "Failed to start session",
+      success: false,
+      error,
+    });
+  }
+};
 
-const completeSession = async function(req:Request , res:Response){
+export const completeSession = async function (req: Request, res: Response) {
+  const userId = req.user?.id;
+  const { sessionId } = req.params;
 
-}
+  try {
+      if (!userId) {
+        return res.status(400).json({
+          message: "failed to authorized",
+        });
+      }
 
-const cancelSession = async function (req:Request , res: Response){
+      if (!sessionId) {
+        return res.status(400).json({
+          message: "Session id is required",
+        });
+      }
 
-}
+      const session = await FocusSession.findOne({
+        _id: sessionId,
+        user: userId,
+        status: "active",
+      });
+      if (!session) {
+        return res.status(400).json({
+          message: "Active session not found",
+        });
+      }
 
-const getSession = async function (req:Request , res: Response){
+      //current time
+      const endTime = new Date();
 
-}
+      // duration on seconds
+      const duration = Math.floor(
+        (endTime.getTime() - session.startTime.getTime()) / 1000,
+      );
+      session.endTime = endTime;
+      session.duration = duration;
+      session.status = "completed";
+
+      await session.save();
+
+      return res.status(200).json({
+        message: "Focus session completed",
+        success: true,
+        session,
+      });
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: "failed to complete session",
+      success: false,
+      error,
+    });
+    
+  }
+
+
+};
+
+
+
+const cancelSession = async function (req: Request, res: Response) {};
+
+const getSession = async function (req: Request, res: Response) {};
