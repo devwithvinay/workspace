@@ -116,29 +116,63 @@ export const cancelSession = async function (req: Request, res: Response) {
         success: false,
       });
     }
-    const cancelSession =await FocusSession.findOne({
+    const cancelsession = await FocusSession.findOne({
       _id:sessionId,
       user: userId,
       status:"active"
 
     })
 
-    if(!cancelSession){
+    if(!cancelsession){
       return res.status(400).json({
         message:"Active session is not found"
       })
     }
 
     const endTime = new Date()
-    const duration = Math.floor((endTime.getTime() - cancelSession.startTime.getTime())/1000,)
+    const duration = Math.floor((endTime.getTime() - cancelsession.startTime.getTime())/1000,)
 
-    cancelSession.endTime = endTime
-    cancelSession.duration = duration
-    cancelSession.status = "cancelled"
+    cancelsession.endTime = endTime
+    cancelsession.duration = duration
+    cancelsession.status = "cancelled"
 
-    await cancelSession.save();
+    await cancelsession.save();
 
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({
+      message:"failed to cancel session",
+      error,
+      success:false
+    })
+  }
 };
 
-const getSession = async function (req: Request, res: Response) {};
+export const getSession = async function (req: Request, res: Response) {
+  try {
+    const userId = req.user?.id
+    if(!userId){
+         return res.status(401).json({
+        message: "Unauthorized",
+        success: false,
+      });
+    }
+
+    const getsession =await FocusSession.findOne({
+      user:userId,
+    }).sort({
+      createdAt:-1
+    })
+
+    return res.status(200).json({
+      message:"fetching successfully",
+      success:true
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message:"Failed to fetch",
+      error,
+      success:false
+    })
+    
+  }
+};
