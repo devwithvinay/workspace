@@ -49,62 +49,96 @@ export const completeSession = async function (req: Request, res: Response) {
   const { sessionId } = req.params;
 
   try {
-      if (!userId) {
-        return res.status(400).json({
-          message: "failed to authorized",
-        });
-      }
-
-      if (!sessionId) {
-        return res.status(400).json({
-          message: "Session id is required",
-        });
-      }
-
-      const session = await FocusSession.findOne({
-        _id: sessionId,
-        user: userId,
-        status: "active",
+    if (!userId) {
+      return res.status(400).json({
+        message: "failed to authorized",
       });
-      if (!session) {
-        return res.status(400).json({
-          message: "Active session not found",
-        });
-      }
+    }
 
-      //current time
-      const endTime = new Date();
-
-      // duration on seconds
-      const duration = Math.floor(
-        (endTime.getTime() - session.startTime.getTime()) / 1000,
-      );
-      session.endTime = endTime;
-      session.duration = duration;
-      session.status = "completed";
-
-      await session.save();
-
-      return res.status(200).json({
-        message: "Focus session completed",
-        success: true,
-        session,
+    if (!sessionId) {
+      return res.status(400).json({
+        message: "Session id is required",
       });
-    
+    }
+
+    const session = await FocusSession.findOne({
+      _id: sessionId,
+      user: userId,
+      status: "active",
+    });
+    if (!session) {
+      return res.status(400).json({
+        message: "Active session not found",
+      });
+    }
+
+    //current time
+    const endTime = new Date();
+
+    // duration on seconds
+    const duration = Math.floor(
+      (endTime.getTime() - session.startTime.getTime()) / 1000,
+    );
+    session.endTime = endTime;
+    session.duration = duration;
+    session.status = "completed";
+
+    await session.save();
+
+    return res.status(200).json({
+      message: "Focus session completed",
+      success: true,
+      session,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "failed to complete session",
       success: false,
       error,
     });
-    
   }
-
-
 };
 
+export const cancelSession = async function (req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+    const { sessionId } = req.params;
 
+    if (!userId) {
+      return res.status(400).json({
+        message: "UnAuthorized",
+        success: false,
+      });
+    }
+    if (!sessionId) {
+      return res.status(400).json({
+        message: "Session is required",
+        success: false,
+      });
+    }
+    const cancelSession =await FocusSession.findOne({
+      _id:sessionId,
+      user: userId,
+      status:"active"
 
-const cancelSession = async function (req: Request, res: Response) {};
+    })
+
+    if(!cancelSession){
+      return res.status(400).json({
+        message:"Active session is not found"
+      })
+    }
+
+    const endTime = new Date()
+    const duration = Math.floor((endTime.getTime() - cancelSession.startTime.getTime())/1000,)
+
+    cancelSession.endTime = endTime
+    cancelSession.duration = duration
+    cancelSession.status = "cancelled"
+
+    await cancelSession.save();
+
+  } catch (error) {}
+};
 
 const getSession = async function (req: Request, res: Response) {};
